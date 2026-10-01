@@ -53,7 +53,7 @@ TLS 握手是建立 HTTPS 连接时交换的协议参数；HTTP/2 特征还包�
 - 安装 Docker Engine 和 Docker Compose 插件，确认 `docker compose version` 可用。
 - 准备可访问 Claude 服务的服务器出口，以及有效且已获授权使用的 Claude 账号。
 - 准备 HTTPS 域名和反向代理，将请求转发至服务器本机的 `41002` 端口。
-- 将 [.env.example](.env.example) 与 [vps-docker-compose.yml](vps-docker-compose.yml) 放在同一部署目录。
+- 将 [.env.example](.env.example) 与 [docker-compose.yml](docker-compose.yml) 放在同一部署目录。
 
 默认镜像为 `lisa666520/claude-mirror:latest`。部署只需拉取镜像，无需安装开发工具或编译源码。
 
@@ -129,7 +129,7 @@ docker compose  up -d
 
 从旧 ChatGPT 镜像升级时，保留原数据目录与原有密钥。既有站点用户、授权及兼容数据会按升级流程读取，旧平台凭据不能用于 Claude，需要重新录入 Claude 账号。不要重置加密密钥，也不要手动重命名数据目录中的数据库文件。
 
-已有 `.env.vps` 的部署可以继续使用该文件，将命令中的 `--env-file .env` 换为 `--env-file .env.vps`。升级时不要用示例文件覆盖真实配置；若更换 Compose 文件，确认端口、监听地址和数据挂载与原部署一致。
+
 
 ## 日志、备份与故障排查
 

@@ -1,0 +1,45 @@
+import os
+import sys
+
+import django
+
+cur_path = os.path.abspath(__file__)
+parent = os.path.dirname
+sys.path.append(parent(parent(cur_path)))
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
+django.setup()
+
+if __name__ == "__main__":
+    from app.accounts.models import User
+    from app.settings import FREE_ACCOUNT_USERNAME, ADMIN_USERNAME, ADMIN_PASSWORD
+    from django.contrib.auth.password_validation import validate_password
+
+    if not ADMIN_USERNAME:
+        raise Exception("未设置 超级管理员账密")
+    if not ADMIN_PASSWORD:
+        raise Exception("ADMIN_PASSWORD 未设置，请设置后再初始化")
+
+
+    defaults = {"remark": "超级管理员", "isolated_session": False}
+    user, created = User.objects.get_or_create(username=ADMIN_USERNAME, defaults=defaults)
+    validate_password(ADMIN_PASSWORD, user)
+    user.set_password(ADMIN_PASSWORD)
+    user.is_staff = True
+    user.is_active = True
+    user.is_superuser = True
+
+    user.save()
+    print("Superuser created.")
+
+    defaults = {
+        "remark": "用于免费体验",
+        "is_active": False,
+        "isolated_session": True,
+        # 模型由绑定账号的 Claude bootstrap 清单决定，不能预置其他上游的模型 ID。
+        "model_limit": []
+    }
+    user, created = User.objects.get_or_create(username=FREE_ACCOUNT_USERNAME, defaults=defaults)
+    user.is_superuser = False
+    user.save()
+    print("Freeuser created.")

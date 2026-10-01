@@ -1,0 +1,44 @@
+# 仅拉取发行镜像，不使用本地实现源码。
+# docker compose --env-file .env -f vps-docker-compose.yml up -d
+services:
+  claude-mirror:
+    image: "${ALL_IN_ONE_IMAGE:-lisa666520/claude-mirror:latest}"
+    container_name: claude-mirror
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${PORT:-41002}:41002"
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "41002"
+      ADMIN_USERNAME: "${ADMIN_USERNAME:-admin}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:?请在环境文件中填写管理员密码}"
+      GATEWAY_ADMIN_SECRET: "${GATEWAY_ADMIN_SECRET:?请在环境文件中填写独立服务密钥}"
+      CREDENTIAL_ENCRYPTION_KEY: "${CREDENTIAL_ENCRYPTION_KEY:?请在环境文件中填写凭据加密密钥}"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?请在环境文件中填写独立站点安全密钥}"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS:?请填写实际访问主机名}"
+      DJANGO_CSRF_TRUSTED_ORIGINS: "${DJANGO_CSRF_TRUSTED_ORIGINS:?请填写实际 HTTPS 访问来源}"
+      COOKIE_SECURE: "${COOKIE_SECURE:-true}"
+      DJANGO_SESSION_COOKIE_SECURE: "${DJANGO_SESSION_COOKIE_SECURE:-true}"
+      DJANGO_CSRF_COOKIE_SECURE: "${DJANGO_CSRF_COOKIE_SECURE:-true}"
+      DJANGO_DEBUG: "false"
+      DJANGO_ALLOW_ALL_ORIGINS: "disable"
+      DJANGO_SECURE_SSL_REDIRECT: "false"
+      LOCAL_NETWORK_ACCESS: "disable"
+      SHOW_GITHUB: "false"
+      ALLOW_REGISTER: "${ALLOW_REGISTER:-false}"
+      API_TOKEN_TTL_SECONDS: "${API_TOKEN_TTL_SECONDS:-604800}"
+      TRUSTED_PROXY_IPS: "${TRUSTED_PROXY_IPS:-}"
+      TZ: "${TZ:-America/Los_Angeles}"
+    volumes:
+      - "${DATA_DIR:-./data}:/app/data"
+    shm_size: "1gb"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:41002/admin/', timeout=4).close()"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s

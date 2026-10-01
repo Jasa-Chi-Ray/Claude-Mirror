@@ -1,7 +1,7 @@
 # Claude Mirror
 
 面向个人与团队的 Claude 网页镜像，提供站点登录、账号池管理、用户授权，以及项目与对话隔离。用户通过镜像站使用已获授权的 Claude 账号，管理员在后台管理账号、用户与使用配额。
-
+由于部分功能从[`ChatGPT-mirror`](https://github.com/Jasa-Chi-Ray/chatgpt-mirror)迁移过来，可能需要一点针对 Claude 的适配时间
 
 ## 功能
 

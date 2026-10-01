@@ -8,6 +8,7 @@
 !/docker-compose.yml
 !/frontend/
 !/backend/
+!/imagevideo/
 
 # 依赖、构建产物与测试输出。
 node_modules/
